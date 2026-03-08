@@ -1,0 +1,29 @@
+pragma language_version 0.21;
+
+export ledger totalLiquidity: Integer;
+
+export ledger balances: Map<Address, Integer>;
+
+export circuit deposit(amount: Integer): [] {
+
+    let sender = caller();
+
+    let current = balances.get(sender).unwrap_or(0);
+
+    balances.insert(sender, current + disclose(amount));
+
+    totalLiquidity = totalLiquidity + disclose(amount);
+}
+
+export circuit withdraw(amount: Integer): [] {
+
+    let sender = caller();
+
+    let current = balances.get(sender).unwrap_or(0);
+
+    assert(current >= disclose(amount));
+
+    balances.insert(sender, current - disclose(amount));
+
+    totalLiquidity = totalLiquidity - disclose(amount);
+}
